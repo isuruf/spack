@@ -44,6 +44,8 @@ class Symengine(CMakePackage):
             description='Compile with MPC library')
     variant('mpfr',         default=True,
             description='Compile with MPFR library')
+    variant('llvm',         default=True,
+            description='Compile with LLVM library')
     variant('piranha',      default=False,
             description='Compile with Piranha integer library')
     variant('thread_safe',  default=True,
@@ -65,6 +67,7 @@ class Symengine(CMakePackage):
     depends_on('mpfr',     when='+mpfr~boostmp')
     depends_on('flint',    when='+flint~boostmp')
     depends_on('piranha',  when='+piranha~flint~boostmp')
+    depends_on('llvm',     when='+llvm~boostmp')
 
     def build_type(self):
         # CMAKE_BUILD_TYPE should be  Debug | Release
@@ -83,7 +86,7 @@ class Symengine(CMakePackage):
                 'ON' if ('+thread_safe' or '+openmp') in spec else 'OFF'),
             '-DBUILD_TESTS:BOOL=%s' % (
                 'ON' if self.run_tests else 'OFF'),
-            '-DBUILD_BENCHMARKS:BOOL=ON',
+            '-DBUILD_BENCHMARKS:BOOL=OFF',
             '-DWITH_OPENMP:BOOL=%s' % (
                 'ON' if '+openmp' in spec else 'OFF'),
             '-DBUILD_SHARED_LIBS:BOOL=%s' % (
@@ -108,6 +111,8 @@ class Symengine(CMakePackage):
                     'ON' if '+mpc' in spec else 'OFF'),
                 '-DWITH_MPFR:BOOL=%s' % (
                     'ON' if '+mpfr' in spec else 'OFF'),
+                '-DWITH_LLVM:BOOL=%s' % (
+                    'ON' if '+llvm' in spec else 'OFF'),
             ])
             if '+flint' in spec:
                 options.extend([
